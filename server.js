@@ -8,8 +8,6 @@ var server = app.listen(9000);
 var options = {
     debug: true
 }
-/*Хранит список всех Peer.js идентификаторов
- */
 var ids = [];
 peerServer = ExpressPeerServer(server, options)
 app.use('/myapp', peerServer);
@@ -27,12 +25,10 @@ peerServer.on('connection', function(id) {
 });
 
 peerServer.on('disconnect', function(id) {
-    console.log(id + " disconnected");
-    for(i=0;i<ids.length;i++)
+    console.log(id + " disconnected")
+    for(var i=0; i < ids.length; i++)
     {
-			if(ids[i] == id)
-			{
-				ids.splice(i, 1);
-			}
-		}
+			if(ids[i] === id)
+				ids.splice(i,1);
+	  }
 });

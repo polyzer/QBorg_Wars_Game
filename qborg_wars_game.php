@@ -11,7 +11,7 @@
 <script src='../games_resources/libs/three.js/src/extras/THREEx/THREEx.WindowResize.js'></script>
 			 
 <script src="../games_resources/libs/jquery.js"></script>
-<script src="../games_resources/libs/peer.min.js"></script>
+<script src="http://cdn.peerjs.com/0.3/peer.js"></script>
 			 
 <script src='./qborg_wars_game_net_message.js'></script>
 <script src='./qborg_wars_game_player.js'></script>
@@ -52,10 +52,20 @@ var _QBorgGame = function ()
 	
 	// Список удаленных игроков;
 	this.RemotePlayers = [];
-
+ 
+  // Локальный игрок
 	this.LocalPlayer = null;
+	//Все игроки в системе.
+	//[0] -  LocalPlayer;
+	//[1]...RemotePlayers.length - удаленные игроки
+  // структура, хранящая все игроков, включая локального;	
+	this.AllPlayers = [];
 	
-	this.Peer = new Peer('', {host: 'localhost', port: 9000, path: '/myapp'});
+	this.Peer = new Peer({host: 'localhost', 
+												port: 9000, 
+												path: '/myapp',
+												debug: true
+											});
 	
   this.onOpenInitAndStartGameBF = this.onOpenInitAndStartGame.bind(this);
 	this.Peer.on("open", this.onOpenInitAndStartGameBF);
@@ -75,12 +85,16 @@ _QBorgGame.prototype.onOpenInitAndStartGame = function (e)
 	// Локальный игрок, который будет
 	this.LocalPlayer = new _QBorgGameLocalPlayer({
 		scene: this.Scene, 
-		remote_players: this.RemotePlayers, 
+		remote_players: this.RemotePlayers,
+		all_players: this.AllPlayers, 
 		nickname: this.Nickname, 
 		net_messages_object: this.NetMessagesObject,
 		camera: this.Camera
 	});
 		// начинаем игру, после инициализации
+	this.AllPlayers.push(this.LocalPlayer);
+	this.AllPlayers.push(this.RemotePlayers);
+
 	this.startGame();
 
 }
@@ -103,7 +117,7 @@ _QBorgGame.prototype.createPlayersByExistingConnections = function (json_params)
 	{
 		json_params = JSON.parse(json_params);
 	}
-	for(i=0; i<json_params.response.length; i++)
+	for(var i=0; i<json_params.response.length; i++)
 	{
 		// на сервере уже будет установлено наше соединение;
 		// а сами к себе мы подсоединяться не должны!
@@ -114,6 +128,7 @@ _QBorgGame.prototype.createPlayersByExistingConnections = function (json_params)
 		conn = this.Peer.connect(json_params.response[i]);
 		this.RemotePlayers.push(new _QBorgGameRemotePlayer({
 				net_messages_object: this.NetMessagesObject,
+				all_players: this.AllPlayers,
 				scene: this.Scene,
 				connection: conn
 			}));
@@ -128,13 +143,17 @@ _QBorgGame.prototype.updateGameProcess = function ()
 {
 		this.Renderer.render(this.Scene, this.Camera);
 		this.LocalPlayer.update();
-	  for(i=0;i<this.RemotePlayers.length; i++)
-	  {
-			this.RemotePlayers[i].update();
-		}
-
+		this.updateRemotePlayers();
 
 	  requestAnimationFrame(this.updateGameProcessBF);
+}
+
+_QBorgGame.prototype.updateRemotePlayers = function ()
+{
+		for(var j=0; j<this.RemotePlayers.length; j++)
+	  {
+			this.RemotePlayers[j].update();
+		}
 }
 
 // функция делает ajax запрос на signal server
@@ -159,6 +178,7 @@ _QBorgGame.prototype.createPlayerByRecievedConnection = function (conn)
 	this.RemotePlayers.push(new _QBorgGameRemotePlayer({
 															connection: conn,
 															scene: this.Scene,
+															all_players: this.AllPlayers,
 															net_messages_object: this.NetMessagesObject														
 												}));
 };

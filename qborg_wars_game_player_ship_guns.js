@@ -49,7 +49,7 @@ _PlasmaGun.prototype.getBulletParametersByBulletType = function (json_params)
 		{
 			if(this.BulletTypes[bullet_params]["bullet_type"] == json_params.bullet_type)
 			{
-				for(param in this.BulletTypes[bullet_params])
+				for(var param in this.BulletTypes[bullet_params])
 				{
 					// source_mesh нам копировать не нужно для пересылки!
 					if(param !== "source_mesh")
@@ -70,7 +70,7 @@ _PlasmaGun.prototype.getBulletParametersByBulletType = function (json_params)
 _PlasmaGun.prototype.shoot = function (json_params)
 {
 	bullet = new _PlasmaBullet(json_params);
-	this.Scene.add(bullet.Mesh);
+	bullet.addToScene(this.Scene);
 	this.Bullets.push(bullet);
 };
 
@@ -86,7 +86,7 @@ _PlasmaGun.prototype.getBulletMeshByBulletType = function (json_params)
 {
 	if(json_params.bullet_type !== undefined)
 	{
-		for(bullet_params in this.BulletTypes)
+		for(var bullet_params in this.BulletTypes)
 		{
 			if(this.BulletTypes[bullet_params]["bullet_type"] === json_params.bullet_type)
 			{
@@ -102,9 +102,8 @@ _PlasmaGun.prototype.getBulletMeshByBulletType = function (json_params)
  */
 _PlasmaGun.prototype.bulletsMovingControl = function (time_delta)
 {
-	for(i=0; i<this.Bullets.length; i++)
+	for(var i=0; i<this.Bullets.length; i++)
 	{
-		console.log(this.Bullets[i].Direction);
 		if(this.Bullets[i].Distance  > 0)
 		{
 			del = this.Bullets[i].Speed * time_delta;
@@ -114,26 +113,35 @@ _PlasmaGun.prototype.bulletsMovingControl = function (time_delta)
 			this.Bullets[i].Distance -= vec.length();
 		}else
 		{
-			this.Scene.remove(this.Bullets[i].Mesh);
+			this.Bullets[i].removeFromScene(this.Scene);
 			this.Bullets.splice(i,1);
-			i--;
+			--i;
 		}
 	}
 };
 
-_PlasmaGun.prototype.update = function ()
+_PlasmaGun.prototype.bulletsControl = function ()
 {
+	for(var j=0;j<this.Bullets.length; j++)
+	{
+		this.Bullets[j].update();
+		if(this.Bullets[j].getStatus() == "dead")
+		{
+			this.Bullets[j].removeFromScene(this.Scene);
+			console.log("HELLO");
+			this.Bullets.splice(j,1);
+			j--;
+			
+		}
+	}
 	delta = this.Clock.getDelta();
 	this.bulletsMovingControl(delta);
+	
 }
 
-var _PhaserGun = function ()
-{
-};
 
-/*Метод производит выстрел.
- */ 
-_PhaserGun.prototype.shoot = function ()
+_PlasmaGun.prototype.update = function ()
 {
-	
-};
+	this.bulletsControl();
+}
+

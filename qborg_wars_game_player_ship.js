@@ -10,7 +10,7 @@ var _QBorgGamePlayerShip = function (json_params)
 	this.Geometry = new THREE.BoxBufferGeometry(200, 200, 200);
 	this.Material = new THREE.MeshStandardMaterial({emissive: "#57d9ff"});
 	
-	this.Status = "live"; // ("live", "destroyed")
+	this.Status = "live"; // ("live", "dead")
 	
 	this.Scene = null;
 	this.Health = 500; // 
@@ -99,20 +99,28 @@ _QBorgGamePlayerShip.prototype.Life = function (json_params)
 	this.PlasmaGun.update();
 }
 
+/*Контролирует изменение статуса игрока.
+ *СТАТУС = {"live", "dead"};
+ */
 _QBorgGamePlayerShip.prototype.statusControl = function ()
 {
-	this.healthControl();
+	this.healthAndDeadControl();
 }
 
-_QBorgGamePlayerShip.prototype.healthControl = function()
+_QBorgGamePlayerShip.prototype.healthAndDeadControl = function()
 {
 	if(this.Health <= 0)
 	{
 		this.Status = "dead";
 	}
 }
-// эта функция вызывается, когда наносится урон игроку
-_QBorgGamePlayerShip.prototype.onAttacked = function (json_params) 
+/*IN:
+ * json_params = {
+ * 	damage: damage
+ * }
+ */
+
+_QBorgGamePlayerShip.prototype.onDamaged = function (json_params) 
 {
 	if(json_params !== undefined)
 	{
@@ -149,10 +157,12 @@ _QBorgGamePlayerShip.prototype.setRotation = function (json_params)
  * {
  *  distance: json_params.parameters.distance,
  * 	speed: json_params.parameters.speed,
- * 	direction: json_params.direction,
  * 	start_position: json_params.parameters.start_position,
+ * 	direction: json_params.direction,
  *	gun_type: "gun_type",
- *  bullet_type: "bullet_type"			
+ *  bullet_type: "bullet_type",
+ *  remote_players: json_params.remote_players,
+ *  all_players: json_params.all_players
  * }
  */
 _QBorgGamePlayerShip.prototype.shoot = function (json_params)

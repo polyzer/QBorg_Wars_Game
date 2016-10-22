@@ -13,6 +13,7 @@ var _QBorgGameLocalPlayer = function (json_params)
 		this.Scene = json_params.scene;
 		this.PlayerType = "local";
 	  this.RemotePlayers = json_params.remote_players;
+	  this.AllPlayers = json_params.all_players;
 	  this.Nickname = json_params.nickname;
 	  this.NetMessagesObject = json_params.net_messages_object;
     this.Camera = json_params.camera;
@@ -20,7 +21,7 @@ var _QBorgGameLocalPlayer = function (json_params)
 	  
 	  this.Controls = new THREE.FlyControls(this.Ship.getMesh());
 	  this.Controls.movementSpeed = 70;
-    this.Controls.rollSpeed = Math.PI / 18;
+    this.Controls.rollSpeed = Math.PI / 24;
 		this.Controls.autoForward = false;
 		this.Controls.dragToLook = false;
 		
@@ -60,6 +61,7 @@ _QBorgGameLocalPlayer.prototype.onClick = function (event)
 	this.NetMessagesObject.ShootMessage.data = data;
 	this.sendDataToAllRemotePlayers(this.NetMessagesObject.ShootMessage);
 	// теперь стреляем сами!
+	data.all_players = this.AllPlayers;
 	this.Ship.shoot(data);
 };
 
@@ -100,7 +102,7 @@ _QBorgGameLocalPlayer.prototype.sendDataToAllRemotePlayers = function (message)
 	{
 		message = JSON.stringify(message);
 	}
-	for(i=0;i< this.RemotePlayers.length; i++)
+	for(var i=0;i< this.RemotePlayers.length; i++)
 	{
 		if(this.RemotePlayers[i].ConnectionStatus === "open")
 			this.RemotePlayers[i].Connection.send(message);
@@ -168,6 +170,15 @@ _QBorgGameLocalPlayer.prototype.update = function ()
 };
 
 
+_QBorgGameLocalPlayer.prototype.getMesh = function ()
+{
+	return this.Ship.getMesh();
+};
+
+_QBorgGameLocalPlayer.prototype.getShip = function ()
+{
+	return this.Ship;
+};
 
 /* Класс описывает игрока.
  * Класс должен ОБЯЗАТЕЛЬНО принять необходимые параметры в формате JSON:
@@ -189,8 +200,10 @@ var _QBorgGameRemotePlayer = function (json_params)
 		this.Scene = json_params.scene;		
 		this.Connection = json_params.connection;
 		this.NetMessagesObject = json_params.net_messages_object;
+		this.AllPlayers = json_params.all_players;
 		this.Ship = new _QBorgGamePlayerShip({scene: this.Scene, random: true});
 		this.ConnectionStatus = "null";
+		
 	}else
 		console.log(this.constructor.name + " have no json_params!");
   
@@ -261,6 +274,7 @@ _QBorgGameRemotePlayer.prototype.onDataRecieved = function (json_params)
 		if(json_params.request === "shoot")
 	{
 		console.log(json_params.data);
+		json_params.data.all_players = this.AllPlayers;
 		this.Ship.shoot(json_params.data);
 	} else 
 	// если игрок прислал свой Nickname
@@ -279,4 +293,14 @@ _QBorgGameRemotePlayer.prototype.onDataRecieved = function (json_params)
 _QBorgGameRemotePlayer.prototype.update = function ()
 {
 	this.Ship.Life();
+};
+
+_QBorgGameRemotePlayer.prototype.getMesh = function ()
+{
+	return this.Ship.getMesh();
+};
+
+_QBorgGameRemotePlayer.prototype.getShip = function ()
+{
+	return this.Ship;
 };
