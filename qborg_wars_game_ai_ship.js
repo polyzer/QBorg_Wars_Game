@@ -41,7 +41,7 @@ _QBorgAICube.prototype.Life = function ()
 		this.movingControl();
 		this.attackControl();
 	}
-}
+};
 
 _QBorgAICube.prototype.attackControl() = function ()
 {
@@ -50,11 +50,11 @@ _QBorgAICube.prototype.attackControl() = function ()
 	{
 		
 	}
-}
+};
 
 _QBorgAICube.prototype.movingControl = function ()
 {
-}
+};
 
 // эта функция вызывается, когда наносится урон игроку
 _QBorgAICube.prototype.onAttackMe = function (json_params) 
@@ -66,4 +66,4 @@ _QBorgAICube.prototype.onAttackMe = function (json_params)
 			this.Health -= json_params.damage;
 		}
 	}
-}
+};

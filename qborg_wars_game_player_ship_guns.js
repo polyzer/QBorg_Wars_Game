@@ -11,25 +11,27 @@ var _PlasmaGun = function (json_params)
 	
 	this.BulletTypes = {};
 	
-	this.BulletTypes.CubeGreenBulletParameters = {
-			distance: 5000,
-			speed: 6000,
-			direction: {x:100,y:100,z:100},
-			start_position: {x:0,y:0,z:0},
-			source_mesh: new THREE.Mesh(new THREE.CubeGeometry(20, 20, 20), new THREE.MeshStandardMaterial({emissive: "#00ff00"})),
-			bullet_type: "cube_green_bullet",
-			damage: 500
+	this.BulletTypes.CubeGreenBulletParameters = 
+	{
+		distance: 5000,
+		speed: 6000,
+		direction: {x:100,y:100,z:100},
+		start_position: {x:0,y:0,z:0},
+		source_mesh: new THREE.Mesh(new THREE.CubeGeometry(20, 20, 20), new THREE.MeshStandardMaterial({emissive: "#00ff00"})),
+		bullet_type: "cube_green_bullet",
+		damage: 500
 	};
 	this.BulletTypes.CubeGreenBulletParameters.distance = 5000;
 
-	this.BulletTypes.CubeRedBulletParameters = {
-				distance: 10000,
-				speed: 8000,
-				direction: {x:100,y:100,z:100},
-				start_position: {x:0,y:0,z:0},
-				source_mesh: new THREE.Mesh(new THREE.CubeGeometry(20, 20, 20), new THREE.MeshStandardMaterial({emissive: "#ff0000"})),
-			  bullet_type: "cube_red_bullet",
-			  damage: 500
+	this.BulletTypes.CubeRedBulletParameters = 
+	{
+		distance: 10000,
+		speed: 8000,
+		direction: {x:100,y:100,z:100},
+		start_position: {x:0,y:0,z:0},
+		source_mesh: new THREE.Mesh(new THREE.CubeGeometry(20, 20, 20), new THREE.MeshStandardMaterial({emissive: "#ff0000"})),
+		bullet_type: "cube_red_bullet",
+		damage: 500
 	};	
 };
 
@@ -39,9 +41,7 @@ var _PlasmaGun = function (json_params)
  */
 _PlasmaGun.prototype.getBulletParametersByBulletType = function (json_params)
 {
-	ret = {}
-//	console.log(json_params.bullet_type);
-
+	var ret = {};
 
 	if(json_params.bullet_type !== undefined)
 	{
@@ -61,7 +61,7 @@ _PlasmaGun.prototype.getBulletParametersByBulletType = function (json_params)
 		}
 	}
 	return ret;
-}
+};
 
 
 /*Метод производит выстрел.
@@ -69,7 +69,7 @@ _PlasmaGun.prototype.getBulletParametersByBulletType = function (json_params)
  */ 
 _PlasmaGun.prototype.shoot = function (json_params)
 {
-	bullet = new _PlasmaBullet(json_params);
+	var bullet = new _PlasmaBullet(json_params);
 	bullet.addToScene(this.Scene);
 	this.Bullets.push(bullet);
 };
@@ -95,7 +95,7 @@ _PlasmaGun.prototype.getBulletMeshByBulletType = function (json_params)
 		}
 	}
 	throw Error("Problems int _PlasmaGun.prototype.getBulletMeshByBulletType");
-	return undefined;	
+//	return;
 };
 
 /*Метод обрабатывает движение пули!
@@ -106,8 +106,8 @@ _PlasmaGun.prototype.bulletsMovingControl = function (time_delta)
 	{
 		if(this.Bullets[i].Distance  > 0)
 		{
-			del = this.Bullets[i].Speed * time_delta;
-			vec = this.Bullets[i].Direction.clone();
+			var del = this.Bullets[i].Speed * time_delta;
+			var vec = this.Bullets[i].Direction.clone();
 			vec.multiplyScalar(del);
 			this.Bullets[i].Mesh.position.add(vec);
 			this.Bullets[i].Distance -= vec.length();
@@ -122,26 +122,25 @@ _PlasmaGun.prototype.bulletsMovingControl = function (time_delta)
 
 _PlasmaGun.prototype.bulletsControl = function ()
 {
+	
 	for(var j=0;j<this.Bullets.length; j++)
 	{
 		this.Bullets[j].update();
 		if(this.Bullets[j].getStatus() == "dead")
 		{
 			this.Bullets[j].removeFromScene(this.Scene);
-			console.log("HELLO");
 			this.Bullets.splice(j,1);
-			j--;
-			
+			j--;			
 		}
 	}
-	delta = this.Clock.getDelta();
+	var delta = this.Clock.getDelta();
 	this.bulletsMovingControl(delta);
 	
-}
+};
 
 
 _PlasmaGun.prototype.update = function ()
 {
 	this.bulletsControl();
-}
+};
 

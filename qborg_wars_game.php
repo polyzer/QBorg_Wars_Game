@@ -11,7 +11,7 @@
 <script src='../games_resources/libs/three.js/src/extras/THREEx/THREEx.WindowResize.js'></script>
 			 
 <script src="../games_resources/libs/jquery.js"></script>
-<script src="http://cdn.peerjs.com/0.3/peer.js"></script>
+<script src="../games_resources/libs/peer.min.js"></script>
 			 
 <script src='./qborg_wars_game_net_message.js'></script>
 <script src='./qborg_wars_game_player.js'></script>
@@ -46,8 +46,11 @@ var _QBorgGame = function ()
 	
 
 // массив кубов врагов, которые будут добавляться при заходе нового игрока
-	this.Nickname = "USS 1701";
-	this.NetMessagesObject = new _QBorgGameNetMessages({nickname: this.Nickname});
+	this.Nickname = this.generateRandomString(8);
+	this.ID = this.generateRandomString(8);
+	
+// ВНИМАНИЕ: В игре используется глобальный объект		
+	this.NetMessagesObject = new _QBorgGameNetMessages({nickname: this.Nickname, id: this.ID});
 
 	
 	// Список удаленных игроков;
@@ -71,6 +74,21 @@ var _QBorgGame = function ()
 	this.Peer.on("open", this.onOpenInitAndStartGameBF);
 
 };		
+/*
+		Генерирует рандомную строку
+ */
+_QBorgGame.prototype.generateRandomString = function(len)
+{
+	var text = [];
+	var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+	if((len !== undefined) && (len > 0)){
+		for(var i=0; i<len; i++)
+			text.push(possible.charAt(Math.floor(Math.random() * possible.length)));
+	}
+	text = text.join("");
+	return text;
+}
 
 /* Инициализирует начало работы Peer.js
  */
@@ -89,7 +107,10 @@ _QBorgGame.prototype.onOpenInitAndStartGame = function (e)
 		all_players: this.AllPlayers, 
 		nickname: this.Nickname, 
 		net_messages_object: this.NetMessagesObject,
-		camera: this.Camera
+		camera: this.Camera,
+		game_width: this.GameWidth,
+		game_height: this.GameHeight,
+		id: this.ID
 	});
 		// начинаем игру, после инициализации
 	this.AllPlayers.push(this.LocalPlayer);
@@ -179,7 +200,7 @@ _QBorgGame.prototype.createPlayerByRecievedConnection = function (conn)
 															connection: conn,
 															scene: this.Scene,
 															all_players: this.AllPlayers,
-															net_messages_object: this.NetMessagesObject														
+															net_messages_object: this.NetMessagesObject													
 												}));
 };
 

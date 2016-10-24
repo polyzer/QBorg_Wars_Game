@@ -38,18 +38,19 @@ var _QBorgGamePlayerShip = function (json_params)
 	this.PlasmaGun = new _PlasmaGun({scene: this.Scene});
 
 	// Для локального игрока
-  if(this.Camera !== null)
-  {
+	if(this.Camera !== null)
+	{
 		this.ShipMesh = new THREE.Mesh(this.Geometry, this.Material);		
 		this.Mesh = new THREE.Object3D();
 		this.Mesh.position.set(0,0,0);
-		this.ShipMesh.position.set(0, 0, 0);	
+		this.ShipMesh.position.set(0, 0, 0);
+		this.BBox = new THREE.BoundingBoxHelper(this.ShipMesh, 0x00ff00);	
 		
 		this.Camera.position.copy(this.ShipMesh.position);
 		
 		this.Camera.position.y = this.ShipMesh.position.y + 400;
 		this.Camera.position.z = this.ShipMesh.position.z + 400;
-		vec = this.Mesh.getWorldDirection();
+		var vec = this.Mesh.getWorldDirection();
 		vec.z -= 400;
 		this.Camera.lookAt(vec);
 		this.Mesh.add(this.ShipMesh);
@@ -58,6 +59,7 @@ var _QBorgGamePlayerShip = function (json_params)
 	// Для удаленного игрока
 	{
 		this.Mesh = new THREE.Mesh(this.Geometry, this.Material);
+		this.BBox = new THREE.BoundingBoxHelper(this.Mesh, 0x00ff00);	
 	}
 	
 	if(json_params.random !== undefined)
@@ -69,6 +71,8 @@ var _QBorgGamePlayerShip = function (json_params)
 	}
 	
 	this.Scene.add(this.Mesh);
+//	this.Scene.add(this.BBox);
+
 };
 
 /*Функция возвращает стандартные параметры с установленным параметром position;
@@ -76,7 +80,7 @@ var _QBorgGamePlayerShip = function (json_params)
 
 _QBorgGamePlayerShip.prototype.getBulletParametersByGunAndBulletTypes = function (json_params)
 {
-	ret = {};
+	var ret = {};
 	if(json_params.gun_type === "plasma_gun")
 	{
 		ret = this.PlasmaGun.getBulletParametersByBulletType(json_params);
@@ -89,15 +93,17 @@ _QBorgGamePlayerShip.prototype.getBulletParametersByGunAndBulletTypes = function
 _QBorgGamePlayerShip.prototype.setRandomPosition = function ()
 {
 	this.Mesh.position.set(Math.random() * 400 - 200, Math.random() * 400 - 200, Math.random() * 400 - 200);				
-}
+};
 
 // это функция, которая должна вызываться в главной игровой функции
-_QBorgGamePlayerShip.prototype.Life = function (json_params)
+_QBorgGamePlayerShip.prototype.Life = function ()
 {
+	this.BBox.update();
+	
 	this.statusControl();
 	
 	this.PlasmaGun.update();
-}
+};
 
 /*Контролирует изменение статуса игрока.
  *СТАТУС = {"live", "dead"};
@@ -105,7 +111,7 @@ _QBorgGamePlayerShip.prototype.Life = function (json_params)
 _QBorgGamePlayerShip.prototype.statusControl = function ()
 {
 	this.healthAndDeadControl();
-}
+};
 
 _QBorgGamePlayerShip.prototype.healthAndDeadControl = function()
 {
@@ -113,7 +119,7 @@ _QBorgGamePlayerShip.prototype.healthAndDeadControl = function()
 	{
 		this.Status = "dead";
 	}
-}
+};
 /*IN:
  * json_params = {
  * 	damage: damage
@@ -129,7 +135,7 @@ _QBorgGamePlayerShip.prototype.onDamaged = function (json_params)
 			this.Health -= json_params.damage;
 		}
 	}
-}
+};
 /* Устанавливает позицию корабля
  */ 
 _QBorgGamePlayerShip.prototype.setPosition = function (json_params)
@@ -139,7 +145,7 @@ _QBorgGamePlayerShip.prototype.setPosition = function (json_params)
 	
 //	this.Mesh.position.set();	
 	this.Mesh.position.copy(json_params);
-}
+};
 /* Устанавливает поворот корабля в пространстве
  */
 _QBorgGamePlayerShip.prototype.setRotation = function (json_params)
@@ -148,9 +154,7 @@ _QBorgGamePlayerShip.prototype.setRotation = function (json_params)
 		json_params = JSON.parse(json_params);
 		
 	this.Mesh.rotation.copy(json_params);
-	
-	
-}
+};
 /* Стреляет в направлении, которое было указано в параметре,
  * снаряд летит с определенной скоростью
  * Принимает на вход:
@@ -167,10 +171,10 @@ _QBorgGamePlayerShip.prototype.setRotation = function (json_params)
  */
 _QBorgGamePlayerShip.prototype.shoot = function (json_params)
 {
-	gun = this.getGunByType(json_params);
+	var gun = this.getGunByType(json_params);
 	json_params.mesh = gun.getBulletMeshByBulletType(json_params);
 	gun.shoot(json_params);
-}
+};
 
 _QBorgGamePlayerShip.prototype.getGunByType = function (json_params)
 {
@@ -181,27 +185,27 @@ _QBorgGamePlayerShip.prototype.getGunByType = function (json_params)
 			return this.PlasmaGun;
 		}
 	}
-}
+};
 
 /* Возвращает позицию корабля 
  */
 _QBorgGamePlayerShip.prototype.getPosition = function ()
 {
 	return this.Mesh.position.clone();
-}
+};
 /* Возвращает поворот корабля
  */
 _QBorgGamePlayerShip.prototype.getRotation = function ()
 {
 	return this.Mesh.rotation.clone();
-}
+};
 
 _QBorgGamePlayerShip.prototype.getMesh = function ()
 {
 	return this.Mesh;
-}
+};
 
 _QBorgGamePlayerShip.prototype.removeMesh = function ()
 {
-	 this.Scene.remove(this.Mesh);
-}
+	this.Scene.remove(this.Mesh);
+};
