@@ -2,17 +2,21 @@
 <html> 
 <head>
 <meta charset="UTF-8" /> 
-<script src='../games_resources/libs/three.js/build/three.min.js'></script>
+<script src='../games_resources/libs/three.js/build/three.js'></script>
 <script src='../games_resources/libs/three.js/examples/js/controls/FirstPersonControls.js'></script>
 <script src='../games_resources/libs/three.js/examples/js/controls/PointerLockControls.js'></script>
 <script src='../games_resources/libs/three.js/examples/js/controls/FlyControls.js'></script>
 <script src='../games_resources/libs/three.js/src/extras/THREEx/THREEx.FullScreen.js'></script>
 <script src='../games_resources/libs/three.js/src/extras/THREEx/THREEx.KeyboardState.js'></script>
 <script src='../games_resources/libs/three.js/src/extras/THREEx/THREEx.WindowResize.js'></script>
+<script src='../games_resources/libs/three.js/examples/js/renderers/CSS3DRenderer.js'></script>
 			 
 <script src="../games_resources/libs/jquery.js"></script>
 <script src="../games_resources/libs/peer.min.js"></script>
-			 
+<script src="../games_resources/libs/katex/katex.min.js"></script>
+<link href="../games_resources/libs/katex/katex.min.css" rel="stylesheet" type="text/css">
+
+<script src='./qborg_wars_game_menu.js'></script>
 <script src='./qborg_wars_game_net_message.js'></script>
 <script src='./qborg_wars_game_player.js'></script>
 <script src='./qborg_wars_game_player_ship.js'></script>
@@ -21,12 +25,14 @@
 </head>
 
 <body>
+
 <script>
 // Game class
 var _QBorgGame = function () 
 {
 	// подготовка
 	this.Container = document.createElement("div");
+	this.Container.setAttribute("id", "GameContainer");
 	document.body.appendChild(this.Container);
 
 	this.Scene = new THREE.Scene();
@@ -230,7 +236,8 @@ _QBorgGame.prototype.startGame = function ()
 }
 
 // создаем игру при загрузке приложения			
-var GameObj = new _QBorgGame();
+//var GameObj = new _QBorgGame();
+var MenuObj = new _GameMenu();
 
 </script>
 </body>
