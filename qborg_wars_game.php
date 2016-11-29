@@ -2,7 +2,7 @@
 <html> 
 <head>
 <meta charset="UTF-8" /> 
-<script src='../games_resources/libs/three.js/build/three.js'></script>
+<script src='../games_resources/libs/three.js/build/three.min.js'></script>
 <script src='../games_resources/libs/three.js/examples/js/controls/FirstPersonControls.js'></script>
 <script src='../games_resources/libs/three.js/examples/js/controls/PointerLockControls.js'></script>
 <script src='../games_resources/libs/three.js/examples/js/controls/FlyControls.js'></script>
@@ -36,7 +36,7 @@ var _QBorgGame = function ()
 	document.body.appendChild(this.Container);
 
 	this.Scene = new THREE.Scene();
-	this.GameWidth = 1000;
+	this.GameWidth = 800;
 	this.GameHeight = 800;
 
 	this.Camera = new THREE.PerspectiveCamera(45, this.GameWidth/this.GameHeight, 10, 10000);

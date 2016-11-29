@@ -6,6 +6,8 @@ var server = app.listen(9000);
 var options = {
 	debug: true
 };
+
+
 var ids = [];
 var peerServer = ExpressPeerServer(server, options);
 app.use("/myapp", peerServer);
