@@ -55,6 +55,13 @@ var REQUESTS = {};
 		REQUESTS.UTOS.LEAVE_ROOM = "leave_room";
 		REQUESTS.UTOS.CREATE_ROOM = "create_room";
 
+var SHIP_SHIELD = {
+	STATUS: {
+		WORKING: 0,
+		BROKEN: 1
+	}
+};
+
 
 /* генерирует рандомную строку заданной длины
  */

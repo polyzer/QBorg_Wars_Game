@@ -140,7 +140,7 @@ _Game.prototype.createPlayersByExistingConnections = function (json_params)
 		//this.Peer.call(json_params.response[i], StreamObj);///////////////////////////////////////////???????!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		this.RemotePlayers.push(new _RemotePlayer({
 				net_messages_object: this.NetMessagesObject,
-				all_users: this.AllPlayers,
+				all_players: this.AllPlayers,
 				scene: this.Scene,
 				connection: conn
 			}));
@@ -206,9 +206,9 @@ _Game.prototype.createPlayerByRecievedConnection = function (conn)
 	this.RemotePlayers.push(new _RemotePlayer({
 								connection: conn,
 								scene: this.Scene,
-								all_users: this.AllPlayers,
+								all_players: this.AllPlayers,
 								net_messages_object: this.NetMessagesObject													
-					   }));
+					   	 }));
 };
 
 
